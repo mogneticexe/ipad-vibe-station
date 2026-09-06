@@ -1,0 +1,47 @@
+{
+  "name": "VibeStation Cloud (iPad Optimized + Full GUI Desktop)",
+  "dockerFile": "Dockerfile",
+  "forwardPorts": [3000, 6080, 5173],
+  "portsAttributes": {
+    "3000": {
+      "label": "VibeStation Dashboard",
+      "onAutoForward": "openBrowser"
+    },
+    "6080": {
+      "label": "Linux Desktop GUI (noVNC Gigabit)",
+      "onAutoForward": "silent"
+    },
+    "5173": {
+      "label": "Game Dev Server",
+      "onAutoForward": "silent"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.gpuAcceleration": "on",
+        "terminal.integrated.fontSize": 14,
+        "terminal.integrated.lineHeight": 1.25,
+        "editor.fontSize": 15,
+        "editor.lineHeight": 22,
+        "editor.fontFamily": "'Fira Code', Menlo, Monaco, 'Courier New', monospace",
+        "editor.fontLigatures": true,
+        "editor.minimap.enabled": false,
+        "editor.cursorBlinking": "smooth",
+        "editor.smoothScrolling": true,
+        "workbench.activityBar.location": "top",
+        "workbench.colorTheme": "Default Dark Modern",
+        "files.autoSave": "afterDelay",
+        "files.autoSaveDelay": 1000
+      },
+      "extensions": [
+        "ms-toolsai.jupyter",
+        "ms-python.python",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "eamodio.gitlens"
+      ]
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/setup-env.sh"
+}
