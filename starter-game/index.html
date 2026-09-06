@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CyberDash // VibeStation Edition</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-container">
+    <!-- Game HUD -->
+    <div class="hud">
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+      <div class="hud-stats">
+        <span id="percentText">0%</span>
+        <span id="attemptText">ATTEMPT 1</span>
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Overlay Screen -->
+    <div id="startOverlay" class="overlay">
+      <div class="overlay-card">
+        <h1 class="glow-title">CYBER DASH</h1>
+        <p class="sub-desc">HIGH-REFRESH RHYTHM PLATFORMER</p>
+        <div class="btn-play" id="playBtn">PRESS SPACE OR TAP TO START</div>
+        <div class="controls-hint">
+          <span>[SPACE / ▲ / TAP] JUMP</span>
+          <span>[YELLOW PADS] HIGH BOOST</span>
+          <span>[YELLOW ORBS] MID-AIR JUMP</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
