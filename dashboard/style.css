@@ -1,6 +1,5 @@
 /* ==========================================================================
-   VIBESTATION PRO - CYBERPUNK OLED GLASSMORPHISM (iPad Pro Optimized)
-   Includes Fullscreen Linux Desktop GUI (noVNC) Streaming Viewport
+   VIBESTATION PRO - PURE GIGABIT LINUX DESKTOP RDP (iPad Pro Optimized)
    ========================================================================== */
 
 :root {
@@ -275,48 +274,27 @@ body {
   height: calc(100vh - 60px);
 }
 
-/* Views (Split / Desktop / Full Editor / Full Preview) */
-.workspace-viewport.view-split .pane-editor {
-  flex: 1.2;
-}
-.workspace-viewport.view-split .pane-preview {
-  flex: 0.9;
-  display: flex;
-}
-.workspace-viewport.view-split .pane-desktop {
-  display: none !important;
-}
-
+/* Views */
 .workspace-viewport.view-desktop .pane-desktop {
   flex: 1;
   display: flex !important;
 }
-.workspace-viewport.view-desktop .pane-editor,
-.workspace-viewport.view-desktop .pane-preview {
+.workspace-viewport.view-desktop .pane-editor {
   display: none !important;
 }
 
 .workspace-viewport.view-editor .pane-editor {
   flex: 1;
-}
-.workspace-viewport.view-editor .pane-preview,
-.workspace-viewport.view-editor .pane-desktop {
-  display: none !important;
-}
-
-.workspace-viewport.view-preview .pane-preview {
-  flex: 1;
   display: flex !important;
 }
-.workspace-viewport.view-preview .pane-editor,
-.workspace-viewport.view-preview .pane-desktop {
+.workspace-viewport.view-editor .pane-desktop {
   display: none !important;
 }
 
 .workspace-viewport.view-terminal .pane-editor {
   flex: 1;
+  display: flex !important;
 }
-.workspace-viewport.view-terminal .pane-preview,
 .workspace-viewport.view-terminal .pane-desktop {
   display: none !important;
 }
