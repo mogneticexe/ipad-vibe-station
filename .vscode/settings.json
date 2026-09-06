@@ -1,0 +1,19 @@
+{
+  "terminal.integrated.gpuAcceleration": "on",
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.lineHeight": 1.25,
+  "terminal.integrated.cursorBlinking": true,
+  "editor.fontSize": 15,
+  "editor.lineHeight": 23,
+  "editor.fontFamily": "'Fira Code', -apple-system, BlinkMacSystemFont, monospace",
+  "editor.fontLigatures": true,
+  "editor.minimap.enabled": false,
+  "editor.renderWhitespace": "selection",
+  "editor.tabSize": 2,
+  "editor.wordWrap": "on",
+  "workbench.colorTheme": "Default Dark Modern",
+  "workbench.activityBar.location": "top",
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 800,
+  "keyboard.dispatch": "keyCode"
+}
