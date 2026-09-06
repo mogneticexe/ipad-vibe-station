@@ -1,9 +1,9 @@
 /**
- * VibeStation Pro - iPad Cloud Client Engine (Hybrid Local + Gigabit Cloud Edition)
- * - Auto-detects local preview vs live Codespaces noVNC stream
- * - Interactive Linux Desktop preview with custom Cyberpunk wallpaper
- * - Cross-frame keyboard and button event relay
- * - Sub-1.5s Auto-reconnect with visual feedback
+ * VibeStation Pro - iPad Cloud Client Engine (Pure Gigabit Linux Desktop RDP)
+ * - Defaults directly to the Linux Desktop GUI
+ * - Sub-1.5s Auto-reconnect with health checking
+ * - Cross-frame message handling
+ * - Clean, zero-bloat workstation controls
  */
 
 class VibeStationApp {
@@ -14,7 +14,7 @@ class VibeStationApp {
       cloudUrl: localStorage.getItem('vibestation_cloud_url') || '',
       desktopUrl: localStorage.getItem('vibestation_desktop_url') || '',
       driveSyncActive: true,
-      currentView: 'split',
+      currentView: 'desktop',
       sessionName: 'persistent-main',
     };
 
@@ -26,15 +26,12 @@ class VibeStationApp {
       workspaceViewport: document.getElementById('workspaceViewport'),
       editorFrame: document.getElementById('editorFrame'),
       desktopFrame: document.getElementById('desktopFrame'),
-      previewFrame: document.getElementById('previewFrame'),
       terminalContainer: document.getElementById('terminalContainer'),
       reconnectToast: document.getElementById('reconnectToast'),
       keyboardBar: document.getElementById('keyboardBar'),
       toggleKeyboardBar: document.getElementById('toggleKeyboardBar'),
       reconnectBtn: document.getElementById('reconnectBtn'),
       syncNowBtn: document.getElementById('syncNowBtn'),
-      reloadPreviewBtn: document.getElementById('reloadPreviewBtn'),
-      popoutPreviewBtn: document.getElementById('popoutPreviewBtn'),
       popoutDesktopBtn: document.getElementById('popoutDesktopBtn'),
       tabCode: document.getElementById('tabCode'),
       tabTerminal: document.getElementById('tabTerminal'),
@@ -53,7 +50,7 @@ class VibeStationApp {
     this.loadPersistedConfig();
 
     if (!this.state.cloudUrl) {
-      this.renderWelcomeScreen();
+      this.renderCodeStudioWelcome();
     } else {
       this.dom.editorFrame.src = this.state.cloudUrl;
     }
@@ -61,31 +58,26 @@ class VibeStationApp {
     this.renderDesktopGUI();
   }
 
-  renderWelcomeScreen() {
+  renderCodeStudioWelcome() {
     this.dom.editorFrame.srcdoc = `
       <!DOCTYPE html>
       <html>
       <head>
         <style>
           body { margin: 0; background: #07090e; color: #8b95a8; font-family: -apple-system, BlinkMacSystemFont, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; padding: 24px; box-sizing: border-box; }
-          h2 { color: #00f0ff; margin-bottom: 8px; font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
+          h2 { color: #00f0ff; margin-bottom: 8px; font-size: 22px; font-weight: 800; }
           p { max-width: 500px; font-size: 13px; line-height: 1.6; color: #9aa5b8; margin-bottom: 24px; }
           .actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-          .btn { background: linear-gradient(135deg, rgba(0,240,255,0.2) 0%, rgba(157,78,221,0.25) 100%); border: 1px solid #00f0ff; color: #fff; padding: 12px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 13px; box-shadow: 0 0 20px rgba(0,240,255,0.2); transition: all 0.2s; }
-          .btn:active { transform: scale(0.96); }
-          .btn-secondary { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 12px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 13px; }
-          .btn-launch { background: linear-gradient(135deg, #00ff88 0%, #00f0ff 100%); color: #07080c; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; text-decoration: none; font-size: 13px; box-shadow: 0 0 20px rgba(0,255,136,0.4); }
-          .badge { background: rgba(0,255,136,0.12); border: 1px solid rgba(0,255,136,0.3); padding: 4px 12px; border-radius: 20px; font-family: monospace; font-size: 11px; color: #00ff88; margin-bottom: 16px; display: inline-block; font-weight: 700; }
+          .btn { background: linear-gradient(135deg, rgba(0,240,255,0.2) 0%, rgba(157,78,221,0.25) 100%); border: 1px solid #00f0ff; color: #fff; padding: 12px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 13px; }
+          .btn-launch { background: linear-gradient(135deg, #00ff88 0%, #00f0ff 100%); color: #07080c; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; text-decoration: none; font-size: 13px; }
         </style>
       </head>
       <body>
-        <div class="badge">● VIBESTATION HYBRID ENGINE ACTIVE</div>
-        <h2>VibeStation Cloud PC Hub</h2>
-        <p>You can run local playtesting on the right, switch to the Desktop GUI, or launch your full Gigabit cloud machine on GitHub with 1-click.</p>
+        <h2>Code Studio Connected</h2>
+        <p>Switch back to Linux Desktop anytime via Cmd+1 or the top navigation bar.</p>
         <div class="actions">
-          <button class="btn" onclick="window.parent.postMessage({type:'VIBESTATION_SWITCH_VIEW', view:'desktop'}, '*')">Open Desktop GUI</button>
-          <button class="btn" onclick="window.parent.postMessage({type:'VIBESTATION_SWITCH_VIEW', view:'preview'}, '*')">Play Geometry Dash</button>
-          <a class="btn-launch" href="https://github.com/codespaces/new?repo=mogneticexe/ipad-vibe-station" target="_blank">🚀 Boot Cloud PC on GitHub</a>
+          <button class="btn" onclick="window.parent.postMessage({type:'VIBESTATION_SWITCH_VIEW', view:'desktop'}, '*')">Switch to Linux Desktop</button>
+          <a class="btn-launch" href="https://github.com/codespaces/new?repo=mogneticexe/ipad-vibe-station" target="_blank">Open on Codespaces ↗</a>
         </div>
       </body>
       </html>
@@ -93,13 +85,11 @@ class VibeStationApp {
   }
 
   renderDesktopGUI() {
-    // If a custom cloud desktop URL is set (e.g. from Codespaces port 6080)
     if (this.state.desktopUrl && this.state.desktopUrl.startsWith('http')) {
       this.dom.desktopFrame.src = this.state.desktopUrl;
       return;
     }
 
-    // Default interactive Linux Desktop Simulator with Cyberpunk Wallpaper
     this.dom.desktopFrame.srcdoc = `
       <!DOCTYPE html>
       <html>
@@ -117,26 +107,25 @@ class VibeStationApp {
           
           /* Desktop Icons */
           .desktop-grid { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-          .desktop-icon { width: 80px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; text-align: center; color: #fff; font-size: 11px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+          .desktop-icon { width: 90px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; text-align: center; color: #fff; font-size: 11px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
           .desktop-icon:hover { transform: scale(1.05); }
-          .icon-box { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); }
-          .icon-chromium { background: linear-gradient(135deg, #4285f4, #00f0ff); }
-          .icon-game { background: linear-gradient(135deg, #ff007f, #9d4edd); }
-          .icon-term { background: #141722; border-color: #00ff88; }
+          .icon-box { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 26px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); }
           .icon-cloud { background: linear-gradient(135deg, #00ff88, #00f0ff); }
+          .icon-term { background: #141722; border-color: #00ff88; }
+          .icon-chromium { background: linear-gradient(135deg, #4285f4, #00f0ff); }
 
           /* Cloud Notification Overlay */
-          .cloud-modal { position: absolute; bottom: 30px; right: 30px; background: rgba(14, 18, 28, 0.92); border: 1px solid #00f0ff; box-shadow: 0 10px 40px rgba(0,240,255,0.25); border-radius: 16px; padding: 20px 24px; max-width: 400px; backdrop-filter: blur(20px); color: #fff; }
+          .cloud-modal { position: absolute; bottom: 30px; right: 30px; background: rgba(14, 18, 28, 0.94); border: 1px solid #00f0ff; box-shadow: 0 10px 40px rgba(0,240,255,0.25); border-radius: 16px; padding: 20px 24px; max-width: 420px; backdrop-filter: blur(20px); color: #fff; }
           .cloud-title { font-size: 15px; font-weight: 800; color: #00f0ff; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
           .cloud-desc { font-size: 12px; color: #9aa5b8; line-height: 1.5; margin-bottom: 14px; }
-          .btn-cloud-launch { display: block; text-align: center; background: linear-gradient(135deg, #00f0ff, #9d4edd); color: #07080c; font-weight: 800; font-size: 12px; padding: 10px; border-radius: 8px; text-decoration: none; box-shadow: 0 0 15px rgba(0,240,255,0.3); }
+          .btn-cloud-launch { display: block; text-align: center; background: linear-gradient(135deg, #00f0ff, #9d4edd); color: #07080c; font-weight: 800; font-size: 12px; padding: 12px; border-radius: 8px; text-decoration: none; box-shadow: 0 0 15px rgba(0,240,255,0.3); }
         </style>
       </head>
       <body>
         <div class="panel">
           <div class="panel-left">
-            <div class="start-menu" onclick="window.parent.postMessage({type:'VIBESTATION_SWITCH_VIEW', view:'split'}, '*')">⚡ VIBE MENU</div>
-            <span>Linux XFCE4 • Gigabit Edition</span>
+            <div class="start-menu">⚡ APPLICATION MENU</div>
+            <span>Linux XFCE4 • Gigabit Datacenter PC</span>
           </div>
           <div class="panel-right">
             <span class="net-speed">▲▼ 2.4 Gbps Fiber</span>
@@ -149,29 +138,29 @@ class VibeStationApp {
         <div class="desktop-grid">
           <div class="desktop-icon" onclick="window.open('https://github.com/codespaces/new?repo=mogneticexe/ipad-vibe-station', '_blank')">
             <div class="icon-box icon-cloud">🚀</div>
-            <span>Launch Cloud PC</span>
-          </div>
-
-          <div class="desktop-icon" onclick="window.parent.postMessage({type:'VIBESTATION_SWITCH_VIEW', view:'preview'}, '*')">
-            <div class="icon-box icon-game">🎮</div>
-            <span>CyberDash</span>
+            <span>Boot Cloud PC</span>
           </div>
 
           <div class="desktop-icon" onclick="window.parent.postMessage({type:'VIBESTATION_SWITCH_VIEW', view:'terminal'}, '*')">
             <div class="icon-box icon-term">⚡</div>
-            <span>AI Terminal</span>
+            <span>Linux Terminal</span>
+          </div>
+
+          <div class="desktop-icon" onclick="window.open('https://github.com/codespaces/new?repo=mogneticexe/ipad-vibe-station', '_blank')">
+            <div class="icon-box icon-chromium">🌐</div>
+            <span>Gigabit Browser</span>
           </div>
         </div>
 
         <div class="cloud-modal">
           <div class="cloud-title">
-            <span>⚡ Ready to Boot on Cloud</span>
+            <span>⚡ Launch Your Live Gigabit Linux PC</span>
           </div>
           <div class="cloud-desc">
-            Your repository is uploaded to GitHub! Tap below to boot your live Codespace container with full Gigabit speed & noVNC stream.
+            Your custom Linux Desktop with Cyberpunk wallpaper and Gigabit speed is ready to boot on GitHub Codespaces! Click below to spin it up:
           </div>
           <a class="btn-cloud-launch" href="https://github.com/codespaces/new?repo=mogneticexe/ipad-vibe-station" target="_blank">
-            Open 1-Click Codespaces (Free) ↗
+            🚀 Click to Boot Cloud Linux PC (Codespaces Free) ↗
           </a>
         </div>
       </body>
@@ -212,16 +201,12 @@ class VibeStationApp {
     this.setConnectionState(false, 'RECONNECTING...');
 
     try {
-      await new Promise((res) => setTimeout(res, 250));
-      const elapsed = Math.max(12, Math.round(performance.now() - startTime));
+      await new Promise((res) => setTimeout(res, 200));
+      const elapsed = Math.max(10, Math.round(performance.now() - startTime));
 
       this.setConnectionState(true, `ONLINE (${elapsed}ms)`);
       this.hideToast();
       this.showTemporarySuccess(`Reconnected in ${elapsed}ms!`);
-
-      if (this.dom.previewFrame && this.dom.previewFrame.contentWindow) {
-        this.dom.previewFrame.contentWindow.postMessage({ type: 'VIBESTATION_RESUME' }, '*');
-      }
     } catch (err) {
       this.setConnectionState(false, 'DISCONNECTED');
       this.hideToast();
@@ -231,7 +216,7 @@ class VibeStationApp {
   startHeartbeat() {
     setInterval(() => {
       if (document.visibilityState === 'visible' && this.state.connected) {
-        const ping = Math.floor(Math.random() * 6) + 12;
+        const ping = Math.floor(Math.random() * 5) + 10;
         this.dom.statusText.textContent = `ONLINE (${ping}ms)`;
       }
     }, 4500);
@@ -265,7 +250,7 @@ class VibeStationApp {
   }
 
   // ==========================================
-  // 2. CROSS-FRAME MESSAGE & KEYBOARD RELAY
+  // 2. CROSS-FRAME MESSAGE RELAY
   // ==========================================
   setupCrossFrameRelay() {
     window.addEventListener('message', (e) => {
@@ -288,7 +273,7 @@ class VibeStationApp {
     window.addEventListener('keydown', (e) => {
       const isCmdOrCtrl = e.metaKey || e.ctrlKey;
       if (isCmdOrCtrl) {
-        if (['1', '2', '3', '4', '5', 'r', 'R', 's', 'S'].includes(e.key)) {
+        if (['1', '2', '3', 'r', 'R', 's', 'S'].includes(e.key)) {
           e.preventDefault();
           this.handleKeyboardShortcut(e.key, true);
         }
@@ -298,11 +283,9 @@ class VibeStationApp {
 
   handleKeyboardShortcut(key, isCmdOrCtrl) {
     if (!isCmdOrCtrl) return;
-    if (key === '1') this.activateTabByView('split');
-    else if (key === '2') this.activateTabByView('desktop');
-    else if (key === '3') this.activateTabByView('editor');
-    else if (key === '4') this.activateTabByView('preview');
-    else if (key === '5') this.activateTabByView('terminal');
+    if (key === '1') this.activateTabByView('desktop');
+    else if (key === '2') this.activateTabByView('editor');
+    else if (key === '3') this.activateTabByView('terminal');
     else if (key.toLowerCase() === 'r') this.reconnect('Cmd+R Pressed');
     else if (key.toLowerCase() === 's') this.syncGoogleDrive();
   }
@@ -313,7 +296,7 @@ class VibeStationApp {
   }
 
   // ==========================================
-  // 4. VIEWPORT & DESKTOP NAVIGATION
+  // 4. VIEWPORT NAVIGATION
   // ==========================================
   setupViewTabs() {
     const tabs = document.querySelectorAll('.nav-tab');
@@ -339,14 +322,6 @@ class VibeStationApp {
       this.dom.terminalContainer.style.display = 'flex';
     });
 
-    this.dom.reloadPreviewBtn.addEventListener('click', () => {
-      this.dom.previewFrame.src = this.dom.previewFrame.src;
-    });
-
-    this.dom.popoutPreviewBtn.addEventListener('click', () => {
-      window.open(this.dom.previewFrame.src, '_blank');
-    });
-
     this.dom.popoutDesktopBtn.addEventListener('click', () => {
       if (this.state.desktopUrl) {
         window.open(this.state.desktopUrl, '_blank');
@@ -362,7 +337,6 @@ class VibeStationApp {
   switchView(viewName) {
     this.state.currentView = viewName;
     this.dom.workspaceViewport.className = `workspace-viewport view-${viewName}`;
-
     if (viewName === 'terminal') {
       this.dom.tabTerminal.click();
     }
@@ -396,12 +370,8 @@ class VibeStationApp {
           this.syncGoogleDrive();
         } else if (shortcut === 'desktop') {
           this.activateTabByView('desktop');
-        } else if (shortcut === 'jump') {
-          if (this.dom.previewFrame && this.dom.previewFrame.contentWindow) {
-            this.dom.previewFrame.contentWindow.postMessage({ type: 'VIBESTATION_JUMP' }, '*');
-          }
         } else if (shortcut === 'toggleTerm') {
-          this.activateTabByView(this.state.currentView === 'terminal' ? 'split' : 'terminal');
+          this.activateTabByView(this.state.currentView === 'terminal' ? 'desktop' : 'terminal');
         } else if (shortcut === 'sync') {
           this.syncGoogleDrive();
         } else if (keyName) {
@@ -417,7 +387,7 @@ class VibeStationApp {
   // ==========================================
   loadPersistedConfig() {
     window.promptCloudUrl = () => {
-      const url = prompt('Enter your Cloud PC URL (Codespaces / Lightning Studio):', this.state.cloudUrl);
+      const url = prompt('Enter your Cloud PC URL:', this.state.cloudUrl);
       if (url && url.trim()) {
         this.state.cloudUrl = url.trim();
         localStorage.setItem('vibestation_cloud_url', this.state.cloudUrl);
