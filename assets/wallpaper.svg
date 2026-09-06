@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2560 1440" width="2560" height="1440">
+  <defs>
+    <!-- Deep Cyber Space Gradient -->
+    <radialGradient id="spaceGrad" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#12072b"/>
+      <stop offset="50%" stop-color="#070812"/>
+      <stop offset="100%" stop-color="#030305"/>
+    </radialGradient>
+
+    <!-- Glowing Cyber Sun / Horizon -->
+    <linearGradient id="sunGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff007f"/>
+      <stop offset="40%" stop-color="#ff5e00"/>
+      <stop offset="80%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#070812"/>
+    </linearGradient>
+
+    <!-- Neon Grid Glow -->
+    <linearGradient id="gridLineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#9d4edd" stop-opacity="0"/>
+    </linearGradient>
+
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="15" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="megaGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="40" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="2560" height="1440" fill="url(#spaceGrad)"/>
+
+  <!-- Cyber Horizon Sun -->
+  <circle cx="1280" cy="740" r="380" fill="url(#sunGrad)" filter="url(#megaGlow)" opacity="0.85"/>
+  <!-- Sun Stripes (Synthwave retro effect) -->
+  <g fill="#070812">
+    <rect x="800" y="700" width="960" height="8"/>
+    <rect x="800" y="730" width="960" height="14"/>
+    <rect x="800" y="770" width="960" height="22"/>
+    <rect x="800" y="820" width="960" height="34"/>
+    <rect x="800" y="880" width="960" height="50"/>
+  </g>
+
+  <!-- Horizon Light Beam -->
+  <line x1="0" y1="840" x2="2560" y2="840" stroke="#00f0ff" stroke-width="4" filter="url(#neonGlow)"/>
+
+  <!-- Perspective 3D Grid Floor -->
+  <g stroke="url(#gridLineGrad)" stroke-width="2" opacity="0.65">
+    <!-- Vanishing perspective lines -->
+    <line x1="1280" y1="840" x2="-200" y2="1440"/>
+    <line x1="1280" y1="840" x2="100" y2="1440"/>
+    <line x1="1280" y1="840" x2="400" y2="1440"/>
+    <line x1="1280" y1="840" x2="700" y2="1440"/>
+    <line x1="1280" y1="840" x2="1000" y2="1440"/>
+    <line x1="1280" y1="840" x2="1280" y2="1440"/>
+    <line x1="1280" y1="840" x2="1560" y2="1440"/>
+    <line x1="1280" y1="840" x2="1860" y2="1440"/>
+    <line x1="1280" y1="840" x2="2160" y2="1440"/>
+    <line x1="1280" y1="840" x2="2460" y2="1440"/>
+    <line x1="1280" y1="840" x2="2760" y2="1440"/>
+
+    <!-- Horizontal grid lines with perspective compression -->
+    <line x1="0" y1="850" x2="2560" y2="850"/>
+    <line x1="0" y1="865" x2="2560" y2="865"/>
+    <line x1="0" y1="885" x2="2560" y2="885"/>
+    <line x1="0" y1="915" x2="2560" y2="915"/>
+    <line x1="0" y1="960" x2="2560" y2="960"/>
+    <line x1="0" y1="1025" x2="2560" y2="1025"/>
+    <line x1="0" y1="1115" x2="2560" y2="1115"/>
+    <line x1="0" y1="1240" x2="2560" y2="1240"/>
+    <line x1="0" y1="1400" x2="2560" y2="1400"/>
+  </g>
+
+  <!-- Stars / Neon Dust Particles -->
+  <g fill="#00f0ff" opacity="0.8">
+    <circle cx="200" cy="180" r="2"/>
+    <circle cx="500" cy="300" r="3"/>
+    <circle cx="850" cy="150" r="1.5"/>
+    <circle cx="1600" cy="220" r="2.5"/>
+    <circle cx="1900" cy="120" r="3"/>
+    <circle cx="2250" cy="280" r="2"/>
+    <circle cx="2400" cy="400" r="1.5"/>
+    <circle cx="350" cy="550" r="2"/>
+    <circle cx="2100" cy="600" r="2.5"/>
+  </g>
+
+  <!-- Cyber Branding Typography -->
+  <g font-family="'Plus Jakarta Sans', -apple-system, sans-serif" text-anchor="middle">
+    <!-- Main Title -->
+    <text x="1280" y="480" font-size="96" font-weight="900" fill="#ffffff" letter-spacing="14" filter="url(#neonGlow)">
+      VIBESTATION PRO
+    </text>
+    <text x="1280" y="480" font-size="96" font-weight="900" fill="#00f0ff" letter-spacing="14">
+      VIBESTATION PRO
+    </text>
+
+    <!-- Subtitle Badge -->
+    <rect x="940" y="520" width="680" height="42" rx="21" fill="rgba(0, 240, 255, 0.12)" stroke="#00f0ff" stroke-width="1.5"/>
+    <text x="1280" y="547" font-size="16" font-weight="700" fill="#00ff88" letter-spacing="4" font-family="monospace">
+      ⚡ GIGABIT CLOUD PC • IPAD ULTRA-LOW LATENCY DESKTOP
+    </text>
+  </g>
+</svg>
