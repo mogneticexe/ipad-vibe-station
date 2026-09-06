@@ -1,9 +1,9 @@
 /**
- * VibeStation Pro - iPad Cloud Client Engine (Desktop GUI & Gigabit Edition)
- * - Full Linux XFCE4 Desktop Streaming over noVNC (Port 6080)
- * - Sub-1.5s Auto-reconnect with health checking
- * - Cross-frame keyboard event forwarding from embedded iframes
- * - Gigabit cloud speed & zero-loss session persistence
+ * VibeStation Pro - iPad Cloud Client Engine (Hybrid Local + Gigabit Cloud Edition)
+ * - Auto-detects local preview vs live Codespaces noVNC stream
+ * - Interactive Linux Desktop preview with custom Cyberpunk wallpaper
+ * - Cross-frame keyboard and button event relay
+ * - Sub-1.5s Auto-reconnect with visual feedback
  */
 
 class VibeStationApp {
@@ -12,7 +12,7 @@ class VibeStationApp {
       connected: true,
       lastPing: Date.now(),
       cloudUrl: localStorage.getItem('vibestation_cloud_url') || '',
-      desktopUrl: localStorage.getItem('vibestation_desktop_url') || 'http://localhost:6080/vnc.html?autoconnect=true&resize=remote',
+      desktopUrl: localStorage.getItem('vibestation_desktop_url') || '',
       driveSyncActive: true,
       currentView: 'split',
       sessionName: 'persistent-main',
@@ -57,6 +57,8 @@ class VibeStationApp {
     } else {
       this.dom.editorFrame.src = this.state.cloudUrl;
     }
+
+    this.renderDesktopGUI();
   }
 
   renderWelcomeScreen() {
@@ -65,22 +67,112 @@ class VibeStationApp {
       <html>
       <head>
         <style>
-          body { margin: 0; background: #07090e; color: #8b95a8; font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; padding: 24px; box-sizing: border-box; }
+          body { margin: 0; background: #07090e; color: #8b95a8; font-family: -apple-system, BlinkMacSystemFont, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; padding: 24px; box-sizing: border-box; }
           h2 { color: #00f0ff; margin-bottom: 8px; font-size: 22px; font-weight: 800; letter-spacing: 0.5px; }
-          p { max-width: 500px; font-size: 13px; line-height: 1.6; color: #9aa5b8; margin-bottom: 20px; }
-          .actions { display: flex; gap: 12px; }
-          .btn { background: linear-gradient(135deg, rgba(0,240,255,0.2) 0%, rgba(157,78,221,0.25) 100%); border: 1px solid #00f0ff; color: #fff; padding: 12px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 13px; box-shadow: 0 0 20px rgba(0,240,255,0.2); }
-          .btn-secondary { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 12px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 13px; }
+          p { max-width: 500px; font-size: 13px; line-height: 1.6; color: #9aa5b8; margin-bottom: 24px; }
+          .actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+          .btn { background: linear-gradient(135deg, rgba(0,240,255,0.2) 0%, rgba(157,78,221,0.25) 100%); border: 1px solid #00f0ff; color: #fff; padding: 12px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; text-decoration: none; font-size: 13px; box-shadow: 0 0 20px rgba(0,240,255,0.2); transition: all 0.2s; }
+          .btn:active { transform: scale(0.96); }
+          .btn-secondary { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); color: #fff; padding: 12px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; text-decoration: none; font-size: 13px; }
+          .btn-launch { background: linear-gradient(135deg, #00ff88 0%, #00f0ff 100%); color: #07080c; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 800; cursor: pointer; text-decoration: none; font-size: 13px; box-shadow: 0 0 20px rgba(0,255,136,0.4); }
           .badge { background: rgba(0,255,136,0.12); border: 1px solid rgba(0,255,136,0.3); padding: 4px 12px; border-radius: 20px; font-family: monospace; font-size: 11px; color: #00ff88; margin-bottom: 16px; display: inline-block; font-weight: 700; }
         </style>
       </head>
       <body>
-        <div class="badge">● GIGABIT CLOUD ACTIVE</div>
-        <h2>VibeStation Cloud PC Connected</h2>
-        <p>Switch between the Split View, full Linux XFCE Desktop GUI (Port 6080), or full Code Studio.</p>
+        <div class="badge">● VIBESTATION HYBRID ENGINE ACTIVE</div>
+        <h2>VibeStation Cloud PC Hub</h2>
+        <p>You can run local playtesting on the right, switch to the Desktop GUI, or launch your full Gigabit cloud machine on GitHub with 1-click.</p>
         <div class="actions">
-          <button class="btn" onclick="parent.window.app.switchView('desktop')">Open Linux Desktop GUI</button>
-          <button class="btn-secondary" onclick="parent.window.promptCloudUrl()">Configure URL</button>
+          <button class="btn" onclick="window.parent.postMessage({type:'VIBESTATION_SWITCH_VIEW', view:'desktop'}, '*')">Open Desktop GUI</button>
+          <button class="btn" onclick="window.parent.postMessage({type:'VIBESTATION_SWITCH_VIEW', view:'preview'}, '*')">Play Geometry Dash</button>
+          <a class="btn-launch" href="https://github.com/codespaces/new?repo=mogneticexe/ipad-vibe-station" target="_blank">🚀 Boot Cloud PC on GitHub</a>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  renderDesktopGUI() {
+    // If a custom cloud desktop URL is set (e.g. from Codespaces port 6080)
+    if (this.state.desktopUrl && this.state.desktopUrl.startsWith('http')) {
+      this.dom.desktopFrame.src = this.state.desktopUrl;
+      return;
+    }
+
+    // Default interactive Linux Desktop Simulator with Cyberpunk Wallpaper
+    this.dom.desktopFrame.srcdoc = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+          body { width: 100vw; height: 100vh; overflow: hidden; background: #070812 url('/assets/wallpaper.svg') no-repeat center center; background-size: cover; font-family: -apple-system, BlinkMacSystemFont, sans-serif; position: relative; }
+          
+          /* Top Panel (XFCE Style) */
+          .panel { height: 32px; background: rgba(10, 12, 18, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; color: #f0f3fa; font-size: 12px; font-weight: 600; }
+          .panel-left { display: flex; align-items: center; gap: 12px; }
+          .start-menu { background: rgba(0, 240, 255, 0.2); border: 1px solid #00f0ff; color: #fff; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; }
+          .panel-right { display: flex; align-items: center; gap: 14px; font-family: monospace; font-size: 11px; color: #8b95a8; }
+          .net-speed { color: #00ff88; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+          
+          /* Desktop Icons */
+          .desktop-grid { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+          .desktop-icon { width: 80px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; text-align: center; color: #fff; font-size: 11px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+          .desktop-icon:hover { transform: scale(1.05); }
+          .icon-box { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(10px); }
+          .icon-chromium { background: linear-gradient(135deg, #4285f4, #00f0ff); }
+          .icon-game { background: linear-gradient(135deg, #ff007f, #9d4edd); }
+          .icon-term { background: #141722; border-color: #00ff88; }
+          .icon-cloud { background: linear-gradient(135deg, #00ff88, #00f0ff); }
+
+          /* Cloud Notification Overlay */
+          .cloud-modal { position: absolute; bottom: 30px; right: 30px; background: rgba(14, 18, 28, 0.92); border: 1px solid #00f0ff; box-shadow: 0 10px 40px rgba(0,240,255,0.25); border-radius: 16px; padding: 20px 24px; max-width: 400px; backdrop-filter: blur(20px); color: #fff; }
+          .cloud-title { font-size: 15px; font-weight: 800; color: #00f0ff; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+          .cloud-desc { font-size: 12px; color: #9aa5b8; line-height: 1.5; margin-bottom: 14px; }
+          .btn-cloud-launch { display: block; text-align: center; background: linear-gradient(135deg, #00f0ff, #9d4edd); color: #07080c; font-weight: 800; font-size: 12px; padding: 10px; border-radius: 8px; text-decoration: none; box-shadow: 0 0 15px rgba(0,240,255,0.3); }
+        </style>
+      </head>
+      <body>
+        <div class="panel">
+          <div class="panel-left">
+            <div class="start-menu" onclick="window.parent.postMessage({type:'VIBESTATION_SWITCH_VIEW', view:'split'}, '*')">⚡ VIBE MENU</div>
+            <span>Linux XFCE4 • Gigabit Edition</span>
+          </div>
+          <div class="panel-right">
+            <span class="net-speed">▲▼ 2.4 Gbps Fiber</span>
+            <span>CPU: 4-Core</span>
+            <span>RAM: 8GB</span>
+            <span>1920x1080</span>
+          </div>
+        </div>
+
+        <div class="desktop-grid">
+          <div class="desktop-icon" onclick="window.open('https://github.com/codespaces/new?repo=mogneticexe/ipad-vibe-station', '_blank')">
+            <div class="icon-box icon-cloud">🚀</div>
+            <span>Launch Cloud PC</span>
+          </div>
+
+          <div class="desktop-icon" onclick="window.parent.postMessage({type:'VIBESTATION_SWITCH_VIEW', view:'preview'}, '*')">
+            <div class="icon-box icon-game">🎮</div>
+            <span>CyberDash</span>
+          </div>
+
+          <div class="desktop-icon" onclick="window.parent.postMessage({type:'VIBESTATION_SWITCH_VIEW', view:'terminal'}, '*')">
+            <div class="icon-box icon-term">⚡</div>
+            <span>AI Terminal</span>
+          </div>
+        </div>
+
+        <div class="cloud-modal">
+          <div class="cloud-title">
+            <span>⚡ Ready to Boot on Cloud</span>
+          </div>
+          <div class="cloud-desc">
+            Your repository is uploaded to GitHub! Tap below to boot your live Codespace container with full Gigabit speed & noVNC stream.
+          </div>
+          <a class="btn-cloud-launch" href="https://github.com/codespaces/new?repo=mogneticexe/ipad-vibe-station" target="_blank">
+            Open 1-Click Codespaces (Free) ↗
+          </a>
         </div>
       </body>
       </html>
@@ -173,13 +265,18 @@ class VibeStationApp {
   }
 
   // ==========================================
-  // 2. CROSS-FRAME KEYBOARD RELAY
+  // 2. CROSS-FRAME MESSAGE & KEYBOARD RELAY
   // ==========================================
   setupCrossFrameRelay() {
     window.addEventListener('message', (e) => {
-      if (e.data && e.data.type === 'VIBESTATION_FORWARD_KEY') {
+      if (!e.data) return;
+      if (e.data.type === 'VIBESTATION_FORWARD_KEY') {
         const { key, metaKey, ctrlKey } = e.data;
         this.handleKeyboardShortcut(key, metaKey || ctrlKey);
+      } else if (e.data.type === 'VIBESTATION_SWITCH_VIEW') {
+        this.activateTabByView(e.data.view);
+      } else if (e.data.type === 'VIBESTATION_PROMPT_URL') {
+        window.promptCloudUrl();
       }
     });
   }
@@ -251,7 +348,11 @@ class VibeStationApp {
     });
 
     this.dom.popoutDesktopBtn.addEventListener('click', () => {
-      window.open(this.state.desktopUrl, '_blank');
+      if (this.state.desktopUrl) {
+        window.open(this.state.desktopUrl, '_blank');
+      } else {
+        window.open('https://github.com/codespaces/new?repo=mogneticexe/ipad-vibe-station', '_blank');
+      }
     });
 
     this.dom.syncNowBtn.addEventListener('click', () => this.syncGoogleDrive());
@@ -262,12 +363,7 @@ class VibeStationApp {
     this.state.currentView = viewName;
     this.dom.workspaceViewport.className = `workspace-viewport view-${viewName}`;
 
-    // Lazy load the noVNC desktop stream when switching to Desktop view
-    if (viewName === 'desktop') {
-      if (this.dom.desktopFrame.src === 'about:blank' || !this.dom.desktopFrame.src) {
-        this.dom.desktopFrame.src = this.state.desktopUrl;
-      }
-    } else if (viewName === 'terminal') {
+    if (viewName === 'terminal') {
       this.dom.tabTerminal.click();
     }
   }
@@ -317,7 +413,7 @@ class VibeStationApp {
   }
 
   // ==========================================
-  // 5. PERSISTENCE & TOKENS
+  // 5. PERSISTENCE & CONFIG
   // ==========================================
   loadPersistedConfig() {
     window.promptCloudUrl = () => {
@@ -333,9 +429,4 @@ class VibeStationApp {
 
 document.addEventListener('DOMContentLoaded', () => {
   window.app = new VibeStationApp();
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch((err) => {
-      console.log('[VibeStation] SW notice:', err);
-    });
-  }
 });
