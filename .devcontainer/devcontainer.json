@@ -1,18 +1,14 @@
 {
-  "name": "VibeStation Cloud (iPad Optimized + Full GUI Desktop)",
+  "name": "VibeStation Cloud - Pure Gigabit Linux Desktop RDP for iPad",
   "dockerFile": "Dockerfile",
-  "forwardPorts": [3000, 6080, 5173],
+  "forwardPorts": [6080, 3000],
   "portsAttributes": {
-    "3000": {
-      "label": "VibeStation Dashboard",
+    "6080": {
+      "label": "Linux Desktop GUI (noVNC Gigabit RDP)",
       "onAutoForward": "openBrowser"
     },
-    "6080": {
-      "label": "Linux Desktop GUI (noVNC Gigabit)",
-      "onAutoForward": "silent"
-    },
-    "5173": {
-      "label": "Game Dev Server",
+    "3000": {
+      "label": "VibeStation Control Center",
       "onAutoForward": "silent"
     }
   },
@@ -35,7 +31,6 @@
         "files.autoSaveDelay": 1000
       },
       "extensions": [
-        "ms-toolsai.jupyter",
         "ms-python.python",
         "dbaeumer.vscode-eslint",
         "esbenp.prettier-vscode",
