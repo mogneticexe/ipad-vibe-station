@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>VibeStation Cloud // iPad Pro Edition</title>
+  <title>VibeStation Cloud // Linux RDP for iPad</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="VibeStation">
+  <meta name="apple-mobile-web-app-title" content="Linux RDP">
   <meta name="theme-color" content="#0a0b10">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
@@ -25,7 +25,7 @@
         <div class="brand-badge">
           <div class="pulse-dot"></div>
           <span class="brand-title">VIBESTATION</span>
-          <span class="brand-tag">GIGABIT RDP</span>
+          <span class="brand-tag">GIGABIT LINUX RDP</span>
         </div>
         
         <div id="connectionStatus" class="status-pill connected">
@@ -45,23 +45,15 @@
 
       <!-- Center Tabs -->
       <nav class="nav-center">
-        <button class="nav-tab active" data-view="split" title="Split IDE & Game (Cmd+1)">
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
-          <span>Split View</span>
-        </button>
-        <button class="nav-tab" data-view="desktop" title="Full Linux Desktop GUI (Cmd+2)">
+        <button class="nav-tab active" data-view="desktop" title="Full Linux Desktop GUI (Cmd+1)">
           <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          <span>Desktop GUI</span>
+          <span>Linux Desktop</span>
         </button>
-        <button class="nav-tab" data-view="editor" title="Full Code Editor (Cmd+3)">
+        <button class="nav-tab" data-view="editor" title="Full Code Studio (Cmd+2)">
           <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          <span>Editor</span>
+          <span>Code Studio</span>
         </button>
-        <button class="nav-tab" data-view="preview" title="Geometry Dash Game (Cmd+4)">
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          <span>Playtest</span>
-        </button>
-        <button class="nav-tab" data-view="terminal" title="Cloud Terminal (Cmd+5)">
+        <button class="nav-tab" data-view="terminal" title="Cloud Terminal (Cmd+3)">
           <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
           <span>Terminal</span>
         </button>
@@ -82,9 +74,25 @@
     </header>
 
     <!-- Main Workspace Viewport -->
-    <main class="workspace-viewport view-split" id="workspaceViewport">
-      <!-- Left Pane: Code Editor & AI Terminal -->
-      <section class="pane pane-editor" id="editorPane">
+    <main class="workspace-viewport view-desktop" id="workspaceViewport">
+      <!-- Desktop GUI Pane (Primary View) -->
+      <section class="pane pane-desktop" id="desktopPane">
+        <div class="pane-header">
+          <div class="preview-title">
+            <span class="glow-tag">GIGABIT RDP</span>
+            <span>Linux XFCE4 Desktop (Low-Latency noVNC Stream)</span>
+          </div>
+          <div class="preview-actions">
+            <button id="popoutDesktopBtn" class="btn-micro" title="Open Fullscreen in New Tab">↗ Popout Fullscreen</button>
+          </div>
+        </div>
+        <div class="pane-content">
+          <iframe id="desktopFrame" src="about:blank" title="Linux Desktop GUI"></iframe>
+        </div>
+      </section>
+
+      <!-- Code Studio Pane -->
+      <section class="pane pane-editor" id="editorPane" style="display: none;">
         <div class="pane-header">
           <div class="pane-tabs">
             <button class="pane-tab active" id="tabCode">Code Studio</button>
@@ -104,44 +112,11 @@
               <span id="termUptime">Uptime: Gigabit Cloud Active</span>
             </div>
             <div id="mockTerminal" class="mock-terminal">
-              <div class="term-line prompt"><span class="user">vibe@cloud-pc</span>:<span class="dir">~/workspace/geometry-dash</span>$ <span class="cmd">agy "enhance geometry dash particle physics and sync bpm"</span></div>
+              <div class="term-line prompt"><span class="user">vibe@cloud-pc</span>:<span class="dir">~/workspace</span>$ <span class="cmd">agy "build full-stack app with gigabit network"</span></div>
               <div class="term-line output info">⚡ Antigravity Agent active | Gigabit Cloud Connection</div>
               <div class="term-line output success">✓ Codebase indexed | Full XFCE Desktop ready at Port 6080</div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <!-- Desktop GUI Pane (noVNC full screen desktop) -->
-      <section class="pane pane-desktop" id="desktopPane" style="display: none;">
-        <div class="pane-header">
-          <div class="preview-title">
-            <span class="glow-tag">GIGABIT DESKTOP</span>
-            <span>Linux XFCE4 GUI Stream (Low-Latency noVNC)</span>
-          </div>
-          <div class="preview-actions">
-            <button id="popoutDesktopBtn" class="btn-micro" title="Open Fullscreen in New Window">↗ Popout Fullscreen</button>
-          </div>
-        </div>
-        <div class="pane-content">
-          <iframe id="desktopFrame" src="about:blank" title="Linux Desktop GUI"></iframe>
-        </div>
-      </section>
-
-      <!-- Right Pane: Live Playtest & Preview -->
-      <section class="pane pane-preview" id="previewPane">
-        <div class="pane-header">
-          <div class="preview-title">
-            <span class="glow-tag">120 FPS</span>
-            <span>Live Playtest (Geometry Dash Pro)</span>
-          </div>
-          <div class="preview-actions">
-            <button id="reloadPreviewBtn" class="btn-micro" title="Restart Game">↺ Restart</button>
-            <button id="popoutPreviewBtn" class="btn-micro" title="Popout to New Window">↗ Popout</button>
-          </div>
-        </div>
-        <div class="pane-content">
-          <iframe id="previewFrame" src="../starter-game/index.html" title="Game Preview"></iframe>
         </div>
       </section>
     </main>
@@ -155,9 +130,8 @@
       <div class="kb-key" data-key="Meta">CMD</div>
       <div class="kb-divider"></div>
       <div class="kb-key" data-shortcut="save">💾 SAVE</div>
-      <div class="kb-key" data-shortcut="jump">▲ JUMP (SPACE)</div>
-      <div class="kb-key" data-shortcut="toggleTerm">` TERM</div>
       <div class="kb-key" data-shortcut="desktop">🖥 DESKTOP</div>
+      <div class="kb-key" data-shortcut="toggleTerm">` TERM</div>
       <div class="kb-key" data-shortcut="sync">☁ DRIVE SYNC</div>
     </aside>
 
