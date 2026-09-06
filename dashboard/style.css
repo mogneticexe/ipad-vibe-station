@@ -1,0 +1,554 @@
+/* ==========================================================================
+   VIBESTATION PRO - CYBERPUNK OLED GLASSMORPHISM (iPad Pro Optimized)
+   Includes Fullscreen Linux Desktop GUI (noVNC) Streaming Viewport
+   ========================================================================== */
+
+:root {
+  --bg-core: #07080c;
+  --bg-panel: rgba(14, 17, 26, 0.75);
+  --bg-panel-border: rgba(255, 255, 255, 0.08);
+  --bg-card: rgba(22, 27, 41, 0.85);
+  
+  --accent-cyan: #00f0ff;
+  --accent-cyan-glow: rgba(0, 240, 255, 0.35);
+  --accent-purple: #9d4edd;
+  --accent-purple-glow: rgba(157, 78, 221, 0.35);
+  --accent-green: #00ff88;
+  --accent-green-glow: rgba(0, 255, 136, 0.4);
+  --accent-red: #ff3366;
+  
+  --text-primary: #f0f3fa;
+  --text-secondary: #8b95a8;
+  --text-muted: #535c70;
+  
+  --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg-core);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  position: fixed;
+  width: 100vw;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Ambient Backdrops */
+.ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-1 {
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, var(--accent-cyan-glow) 0%, transparent 70%);
+  top: -100px;
+  left: -100px;
+}
+.glow-2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--accent-purple-glow) 0%, transparent 70%);
+  bottom: -150px;
+  right: -100px;
+}
+
+/* Shell Layout */
+.app-shell {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+/* Top Navigation Header */
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 16px;
+  background: var(--bg-panel);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-bottom: 1px solid var(--bg-panel-border);
+  gap: 12px;
+}
+
+.nav-left, .nav-center, .nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pulse-dot {
+  width: 10px;
+  height: 10px;
+  background-color: var(--accent-cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--accent-cyan);
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.6; }
+}
+
+.brand-title {
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 1.5px;
+  background: linear-gradient(135deg, #ffffff 0%, var(--accent-cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-tag {
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(0, 240, 255, 0.12);
+  color: var(--accent-cyan);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.8px;
+}
+
+/* Status Pills */
+.status-pill, .drive-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--bg-panel-border);
+}
+
+.status-pill.connected {
+  border-color: rgba(0, 255, 136, 0.3);
+  color: var(--accent-green);
+}
+.status-pill.connected .status-indicator {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--accent-green);
+  box-shadow: 0 0 8px var(--accent-green);
+}
+
+.status-pill.disconnected {
+  border-color: rgba(255, 51, 102, 0.4);
+  color: var(--accent-red);
+}
+.status-pill.disconnected .status-indicator {
+  background-color: var(--accent-red);
+  box-shadow: 0 0 8px var(--accent-red);
+}
+
+.drive-pill {
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.drive-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+.drive-icon {
+  width: 14px;
+  height: 14px;
+  stroke: var(--accent-cyan);
+}
+
+/* Center Tabs */
+.nav-center {
+  background: rgba(0, 0, 0, 0.35);
+  padding: 3px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--bg-panel-border);
+}
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-tab.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.nav-tab:hover:not(.active) {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Nav Action Buttons */
+.btn-icon {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--bg-panel-border);
+  color: var(--text-secondary);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-icon:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.2) 0%, rgba(157, 78, 221, 0.25) 100%);
+  border: 1px solid var(--accent-cyan);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.25);
+  transition: all 0.2s;
+}
+.btn-primary:active {
+  transform: scale(0.96);
+}
+
+/* Workspace Viewport */
+.workspace-viewport {
+  flex: 1;
+  display: flex;
+  padding: 12px;
+  gap: 12px;
+  overflow: hidden;
+  height: calc(100vh - 60px);
+}
+
+/* Views (Split / Desktop / Full Editor / Full Preview) */
+.workspace-viewport.view-split .pane-editor {
+  flex: 1.2;
+}
+.workspace-viewport.view-split .pane-preview {
+  flex: 0.9;
+  display: flex;
+}
+.workspace-viewport.view-split .pane-desktop {
+  display: none !important;
+}
+
+.workspace-viewport.view-desktop .pane-desktop {
+  flex: 1;
+  display: flex !important;
+}
+.workspace-viewport.view-desktop .pane-editor,
+.workspace-viewport.view-desktop .pane-preview {
+  display: none !important;
+}
+
+.workspace-viewport.view-editor .pane-editor {
+  flex: 1;
+}
+.workspace-viewport.view-editor .pane-preview,
+.workspace-viewport.view-editor .pane-desktop {
+  display: none !important;
+}
+
+.workspace-viewport.view-preview .pane-preview {
+  flex: 1;
+  display: flex !important;
+}
+.workspace-viewport.view-preview .pane-editor,
+.workspace-viewport.view-preview .pane-desktop {
+  display: none !important;
+}
+
+.workspace-viewport.view-terminal .pane-editor {
+  flex: 1;
+}
+.workspace-viewport.view-terminal .pane-preview,
+.workspace-viewport.view-terminal .pane-desktop {
+  display: none !important;
+}
+
+/* Panes */
+.pane {
+  background: var(--bg-panel);
+  border: 1px solid var(--bg-panel-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+}
+
+.pane-header {
+  height: 44px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--bg-panel-border);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.pane-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.pane-tab {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-main);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.pane-tab.active {
+  color: var(--accent-cyan);
+  background: rgba(0, 240, 255, 0.08);
+}
+
+.session-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.preview-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.glow-tag {
+  background: rgba(0, 255, 136, 0.15);
+  color: var(--accent-green);
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+}
+
+.preview-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-micro {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--bg-panel-border);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-micro:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.pane-content {
+  flex: 1;
+  position: relative;
+  background: #000;
+}
+
+.pane-content iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* Terminal Container */
+.terminal-box {
+  width: 100%;
+  height: 100%;
+  background: #0a0c13;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-mono);
+}
+
+.terminal-banner {
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.4);
+  font-size: 11px;
+  color: var(--accent-cyan);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: space-between;
+}
+
+.mock-terminal {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.term-line .user { color: var(--accent-green); font-weight: 600; }
+.term-line .dir { color: var(--accent-cyan); }
+.term-line .cmd { color: #fff; font-weight: 600; }
+.term-line.info { color: var(--accent-purple); }
+.term-line.success { color: var(--accent-green); }
+
+/* Virtual Modifier Bar with iPad Safe-Area */
+.ipad-keyboard-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
+  background: rgba(10, 12, 18, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--bg-panel-border);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ipad-keyboard-bar.hidden {
+  transform: translateY(100%);
+}
+
+.kb-key {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.15s;
+}
+.kb-key:active {
+  background: var(--accent-cyan);
+  color: #000;
+  transform: translateY(1px);
+}
+
+.kb-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0 4px;
+}
+
+/* Reconnect Toast Overlay */
+.reconnect-toast {
+  position: absolute;
+  top: calc(75px + env(safe-area-inset-top, 0px));
+  right: calc(20px + env(safe-area-inset-right, 0px));
+  background: rgba(16, 20, 30, 0.95);
+  border: 1px solid var(--accent-cyan);
+  box-shadow: 0 10px 30px rgba(0, 240, 255, 0.2);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.reconnect-toast.hidden {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+
+.toast-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(0, 240, 255, 0.2);
+  border-top-color: var(--accent-cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.toast-title {
+  font-size: 13px;
+  font-weight: 700;
+}
+.toast-sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
